@@ -51,7 +51,7 @@ if __name__ == "__main__":
     parser.add_argument("--server_ip", type=str, default="192.168.200.160")
     parser.add_argument("--client_ip", type=str, default="192.168.200.117")
     parser.add_argument("--use_multicast", type=bool, default=False)
-    parser.add_argument("--robot", choices=["unitree_g1", "booster_t1", "stanford_toddy","hightorque_hi","pi_football"], type=str, default="unitree_g1")
+    parser.add_argument("--robot", choices=["unitree_g1", "booster_t1", "stanford_toddy","hightorque_hi","pm01","pi_football"], type=str, default="unitree_g1")
     args = parser.parse_args()
     main(args)
     

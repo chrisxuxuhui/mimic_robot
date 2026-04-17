@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--robot", choices=["unitree_g1", "booster_t1", "stanford_toddy","hightorque_hi","pi_football"], type=str, default="unitree_g1")
+    parser.add_argument("--robot", choices=["unitree_g1", "booster_t1", "stanford_toddy","hightorque_hi","pm01","pi_football"], type=str, default="unitree_g1")
 
     parser.add_argument("--robot_motion_path", type=str, required=True)
 

@@ -1,0 +1,63 @@
+_wandb:
+    value:
+        cli_version: 0.24.1
+        e:
+            bizwnc7zt1bijcjjgn8optfz43cpcxdi:
+                args:
+                    - --robot
+                    - pm01
+                    - --input_file
+                    - source/motion/hightorque/pm01/csv/dummy_pm01.csv
+                    - --input_fps
+                    - "30"
+                    - --output_name
+                    - source/motion/hightorque/pm01/npz/dummy_pm01
+                    - --headless
+                codePath: scripts/csv_to_npz.py
+                codePathLocal: scripts/csv_to_npz.py
+                cpu_count: 2
+                cpu_count_logical: 4
+                cudaVersion: "13.0"
+                disk:
+                    /:
+                        total: "832314445824"
+                        used: "454521303040"
+                email: qinbeifeng4@gmail.com
+                executable: /home/ubuntu/miniconda3/envs/env_isaaclab22/bin/python
+                git:
+                    commit: 6f56844b4e0e9f589b5cfc78bf4855c68cc4d2b6
+                    remote: https://github.com/HighTorque-Robotics/Mini-Pi-Plus_BeyondMimic.git
+                gpu: NVIDIA L4
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Ada
+                      cudaCores: 7424
+                      memoryTotal: "24152899584"
+                      name: NVIDIA L4
+                      uuid: GPU-e61a83ca-ad6e-49db-b6e8-d04875888da4
+                host: eric-dev
+                memory:
+                    total: "16767225856"
+                os: Linux-6.8.0-1052-gcp-x86_64-with-glibc2.35
+                program: /home/ubuntu/chris/code/Mini-Pi-Plus_BeyondMimic/scripts/csv_to_npz.py
+                python: CPython 3.10.19
+                root: /home/ubuntu/chris/code/Mini-Pi-Plus_BeyondMimic
+                startedAt: "2026-04-15T18:15:24.197200Z"
+                writerId: bizwnc7zt1bijcjjgn8optfz43cpcxdi
+        m: []
+        python_version: 3.10.19
+        t:
+            "1":
+                - 1
+                - 41
+                - 105
+            "2":
+                - 1
+                - 41
+                - 105
+            "3":
+                - 13
+            "4": 3.10.19
+            "5": 0.24.1
+            "12": 0.24.1
+            "13": linux-x86_64

@@ -1,0 +1,51 @@
+{
+  "os":  "Linux-6.8.0-1052-gcp-x86_64-with-glibc2.35",
+  "python":  "CPython 3.10.19",
+  "startedAt":  "2026-04-16T18:51:07.241165Z",
+  "args":  [
+    "--robot",
+    "pm01",
+    "--input_file",
+    "GMR/RetargetData/lafan1/csv/pm01/push1_subject.csv",
+    "--input_fps",
+    "30",
+    "--output_name",
+    "source/motion/hightorque/pm01/npz/push1_subject",
+    "--headless"
+  ],
+  "program":  "/home/ubuntu/chris/code/Mini-Pi-Plus_BeyondMimic/scripts/csv_to_npz.py",
+  "codePath":  "scripts/csv_to_npz.py",
+  "codePathLocal":  "scripts/csv_to_npz.py",
+  "git":  {
+    "remote":  "https://github.com/HighTorque-Robotics/Mini-Pi-Plus_BeyondMimic.git",
+    "commit":  "6f56844b4e0e9f589b5cfc78bf4855c68cc4d2b6"
+  },
+  "email":  "qinbeifeng4@gmail.com",
+  "root":  "/home/ubuntu/chris/code/Mini-Pi-Plus_BeyondMimic",
+  "host":  "eric-dev",
+  "executable":  "/home/ubuntu/miniconda3/envs/env_isaaclab22/bin/python",
+  "cpu_count":  2,
+  "cpu_count_logical":  4,
+  "gpu":  "NVIDIA L4",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "832314445824",
+      "used":  "469243596800"
+    }
+  },
+  "memory":  {
+    "total":  "16767225856"
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA L4",
+      "memoryTotal":  "24152899584",
+      "cudaCores":  7424,
+      "architecture":  "Ada",
+      "uuid":  "GPU-e61a83ca-ad6e-49db-b6e8-d04875888da4"
+    }
+  ],
+  "cudaVersion":  "13.0",
+  "writerId":  "wsr1s3f1ej8ud5pbkxqa0t3f77d4f22k"
+}

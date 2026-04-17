@@ -47,8 +47,8 @@ parser.add_argument(
 )
 parser.add_argument("--output_name", type=str, required=True, help="The name of the motion npz file.")
 parser.add_argument("--output_fps", type=int, default=50, help="The fps of the output motion.")
-parser.add_argument("--robot", type=str, choices=["g1", "hi", "pi_plus","pi_plus_waist_shell","pi_plus_head"], required=True, 
-                   help="Robot type: g1 (Unitree G1), hi (Unitree Hi), pi_plus (PI Plus),pi_plus_head")
+parser.add_argument("--robot", type=str, choices=["g1", "hi", "pi_plus","pi_plus_waist_shell","pi_plus_head","pm01"], required=True,
+                   help="Robot type: g1 (Unitree G1), hi (Unitree Hi), pi_plus (PI Plus),pi_plus_head, pm01")
 parser.add_argument("--no_wandb", action="store_true", help="Skip WandB upload and save NPZ locally only.")
 parser.add_argument("--save_to", type=str, default="/tmp/", help="Path to save the generated npz.")
 
@@ -81,6 +81,7 @@ from whole_body_tracking.robots.hi import HI_CFG
 from whole_body_tracking.robots.pi_plus import PI_PLUS_CFG
 #from whole_body_tracking.robots.pi_plus80_waist_shell import PI_PLUS80_WAIST_shell_CFG
 #from whole_body_tracking.robots.pi_plus_head import PI_PLUS_HEAD4438_CFG as PI_PLUS_HEAD_CFG
+from whole_body_tracking.robots.pm01 import PM01_CFG
 
 
 
@@ -125,6 +126,7 @@ ROBOT_CONFIGS = {
     "hi": {
         "cfg": HI_CFG,
         "has_header": True,
+        "has_frame_column": False,
         "dof_slice": (7, 30),  # Only take first 23 joints
         "joint_names": [
             "l_hip_pitch_joint",
@@ -179,6 +181,38 @@ ROBOT_CONFIGS = {
             "r_upper_arm_joint",
             "r_elbow_joint",
             "r_wrist_joint",
+        ]
+    },
+    "pm01": {
+        "cfg": PM01_CFG,
+        "has_header": True,  # pm01 CSV有表头
+        "has_frame_column": True,
+        "dof_slice": None,  # 使用所有DOF
+        "joint_names": [
+            "j00_hip_pitch_l_joint",
+            "j01_hip_roll_l_joint",
+            "j02_hip_yaw_l_joint",
+            "j03_knee_pitch_l_joint",
+            "j04_ankle_pitch_l_joint",
+            "j05_ankle_roll_l_joint",
+            "j06_hip_pitch_r_joint",
+            "j07_hip_roll_r_joint",
+            "j08_hip_yaw_r_joint",
+            "j09_knee_pitch_r_joint",
+            "j10_ankle_pitch_r_joint",
+            "j11_ankle_roll_r_joint",
+            "j12_waist_yaw_joint",
+            "j13_shoulder_pitch_l_joint",
+            "j14_shoulder_roll_l_joint",
+            "j15_shoulder_yaw_l_joint",
+            "j16_elbow_pitch_l_joint",
+            "j17_elbow_yaw_l_joint",
+            "j18_shoulder_pitch_r_joint",
+            "j19_shoulder_roll_r_joint",
+            "j20_shoulder_yaw_r_joint",
+            "j21_elbow_pitch_r_joint",
+            "j22_elbow_yaw_r_joint",
+            "j23_head_yaw_joint",
         ]
     },
     # "pi_plus_head": {
@@ -310,16 +344,25 @@ class MotionLoader:
             )
         
         motion = motion.to(torch.float32).to(self.device)
-        self.motion_base_poss_input = motion[:, :3]
-        self.motion_base_rots_input = motion[:, 3:7]
+
+        # Determine column offset if CSV has frame column
+        has_frame_column = self.robot_config.get("has_frame_column", False)
+        col_offset = 1 if has_frame_column else 0
+
+        # Root position (x, y, z) and rotation (x, y, z, w)
+        self.motion_base_poss_input = motion[:, col_offset:col_offset+3]
+        self.motion_base_rots_input = motion[:, col_offset+3:col_offset+7]
         self.motion_base_rots_input = self.motion_base_rots_input[:, [3, 0, 1, 2]]  # convert to wxyz
-        
+
         # Handle different DOF slicing based on robot type
         dof_slice = self.robot_config["dof_slice"]
         if dof_slice is not None:
+            # Adjust slice if frame column present
+            if has_frame_column:
+                dof_slice = (dof_slice[0] + col_offset, dof_slice[1] + col_offset)
             self.motion_dof_poss_input = motion[:, dof_slice[0]:dof_slice[1]]
         else:
-            self.motion_dof_poss_input = motion[:, 7:]
+            self.motion_dof_poss_input = motion[:, col_offset + 7:]
 
         self.input_frames = motion.shape[0]
         self.duration = (self.input_frames - 1) * self.input_dt

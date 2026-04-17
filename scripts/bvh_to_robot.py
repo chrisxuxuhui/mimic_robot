@@ -24,7 +24,7 @@ if __name__ == "__main__":
     
     parser.add_argument(
         "--robot",
-        choices=["unitree_g1", "unitree_g1_with_hands", "booster_t1", "stanford_toddy", "fourier_n1", "engineai_pm01","pi_football","hightorque_hi"],
+        choices=["unitree_g1", "unitree_g1_with_hands", "booster_t1", "stanford_toddy", "fourier_n1", "pm01","pi_football","hightorque_hi"],
         default="unitree_g1",
     )
         
@@ -54,7 +54,70 @@ if __name__ == "__main__":
     
     
     args = parser.parse_args()
-    
+
+    # Robot-specific joint names and reordering mappings
+    # For PM01: 24 DOF, joint names match GMR output order, no reordering needed
+    # For pi_football: 22 DOF, needs reordering from GMR order to CSV order
+    # For other robots: default to pi_football mapping (may need adjustment)
+    robot_joint_configs = {
+        "pm01": {
+            "joint_names": [
+                "j00_hip_pitch_l_joint",
+                "j01_hip_roll_l_joint",
+                "j02_hip_yaw_l_joint",
+                "j03_knee_pitch_l_joint",
+                "j04_ankle_pitch_l_joint",
+                "j05_ankle_roll_l_joint",
+                "j06_hip_pitch_r_joint",
+                "j07_hip_roll_r_joint",
+                "j08_hip_yaw_r_joint",
+                "j09_knee_pitch_r_joint",
+                "j10_ankle_pitch_r_joint",
+                "j11_ankle_roll_r_joint",
+                "j12_waist_yaw_joint",
+                "j13_shoulder_pitch_l_joint",
+                "j14_shoulder_roll_l_joint",
+                "j15_shoulder_yaw_l_joint",
+                "j16_elbow_pitch_l_joint",
+                "j17_elbow_yaw_l_joint",
+                "j18_shoulder_pitch_r_joint",
+                "j19_shoulder_roll_r_joint",
+                "j20_shoulder_yaw_r_joint",
+                "j21_elbow_pitch_r_joint",
+                "j22_elbow_yaw_r_joint",
+                "j23_head_yaw_joint",
+            ],
+            "reorder_indices": list(range(24)),  # no reordering
+        },
+        "pi_football": {
+            "joint_names": [
+                # left leg
+                'l_hip_pitch', 'l_hip_roll', 'l_thigh', 'l_calf', 'l_ankle_pitch', 'l_ankle_roll',
+                # right leg
+                'r_hip_pitch', 'r_hip_roll', 'r_thigh', 'r_calf', 'r_ankle_pitch', 'r_ankle_roll',
+                # left arm
+                'l_shoulder_pitch', 'l_shoulder_roll', 'l_upper_arm', 'l_elbow', 'l_wrist',
+                # right arm
+                'r_shoulder_pitch', 'r_shoulder_roll', 'r_upper_arm', 'r_elbow', 'r_wrist'
+            ],
+            "reorder_indices": [
+                # left leg (keep original)
+                0, 1, 2, 3, 4, 5,
+                # right leg (move from 11-16 to 6-11)
+                11, 12, 13, 14, 15, 16,
+                # left arm (move from 6-10 to 12-16)
+                6, 7, 8, 9, 10,
+                # right arm (keep 17-21)
+                17, 18, 19, 20, 21
+            ],
+        },
+    }
+
+    # Default configuration (pi_football) for other robots
+    default_config = robot_joint_configs["pi_football"]
+    robot_config = robot_joint_configs.get(args.robot, default_config)
+    joint_names = robot_config["joint_names"]
+    reorder_indices = robot_config["reorder_indices"]
 
     if args.save_path is not None:
         save_dir = os.path.dirname(args.save_path)
@@ -140,39 +203,17 @@ if __name__ == "__main__":
         root_rot = np.array([qpos[3:7][[1,2,3,0]] for qpos in qpos_list])
         dof_pos = np.array([qpos[7:] for qpos in qpos_list])
         
-        # 重排序关节角度：从 左腿→左臂→右腿→右臂 到 左腿→右腿→左臂→右臂
-        # 当前顺序: 0-5(左腿), 6-10(左臂), 11-16(右腿), 17-21(右臂)
-        # 期望顺序: 0-5(左腿), 6-11(右腿), 12-16(左臂), 17-21(右臂)
-        reorder_indices = [
-            # 左腿 (保持原位)
-            0, 1, 2, 3, 4, 5,           # l_hip_pitch → l_ankle_roll
-            # 右腿 (从位置11-16移到6-11) 
-            11, 12, 13, 14, 15, 16,     # r_hip_pitch → r_ankle_roll
-            # 左臂 (从位置6-10移到12-16)
-            6, 7, 8, 9, 10,             # l_shoulder_pitch → l_wrist  
-            # 右臂 (从位置17-21移到17-21)
-            17, 18, 19, 20, 21          # r_shoulder_pitch → r_wrist
-        ]
+        # Apply robot-specific joint reordering
         dof_pos = dof_pos[:, reorder_indices]
         # 保存为CSV格式
         with open(args.save_path, 'w',newline='') as f:
             writer = csv.writer(f)
-            # 写入表头 
+            # 写入表头
             header = ['frame']
             header.extend([f'root pos {i}' for i in ['x', 'y','z']])
             header.extend([f'root rot {i}' for i in ['x','y','z','w']])
-            
-            # 关节名称按重排序后的顺序
-            joint_names = [
-                # 左腿
-                'l_hip_pitch', 'l_hip_roll', 'l_thigh', 'l_calf', 'l_ankle_pitch', 'l_ankle_roll',
-                # 右腿  
-                'r_hip_pitch', 'r_hip_roll', 'r_thigh', 'r_calf', 'r_ankle_pitch', 'r_ankle_roll',
-                # 左臂
-                'l_shoulder_pitch', 'l_shoulder_roll', 'l_upper_arm', 'l_elbow', 'l_wrist',
-                # 右臂
-                'r_shoulder_pitch', 'r_shoulder_roll', 'r_upper_arm', 'r_elbow', 'r_wrist'
-            ]
+
+            # 关节名称按重排序后的顺序 (from robot configuration)
             header.extend(joint_names)
             writer.writerow(header)
 

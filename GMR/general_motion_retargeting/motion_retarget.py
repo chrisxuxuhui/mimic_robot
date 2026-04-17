@@ -22,6 +22,9 @@ class GeneralMotionRetargeting:
     ) -> None:
 
         # load the robot model
+        print(f"DEBUG: ROBOT_XML_DICT type: {type(ROBOT_XML_DICT)}")
+        print(f"DEBUG: tgt_robot = {repr(tgt_robot)}")
+        print(f"DEBUG: ROBOT_XML_DICT keys: {list(ROBOT_XML_DICT.keys())}")
         self.xml_file = str(ROBOT_XML_DICT[tgt_robot])
         if verbose:
             print("Use robot model: ", self.xml_file)
@@ -97,7 +100,20 @@ class GeneralMotionRetargeting:
 
         self.ik_limits = [mink.ConfigurationLimit(self.model)]
         if use_velocity_limit:
-            VELOCITY_LIMITS = {k: 3*np.pi for k in self.robot_motor_names.keys()}
+            # Get joint names from dof names (filter out None for floating base)
+            joint_names = [name for name in self.robot_dof_names.keys() if name is not None]
+
+            # Debug: print joint names and their IDs
+            if verbose:
+                print("[GMR] Creating velocity limits for joints:")
+                for jname in joint_names:
+                    try:
+                        jid = self.model.joint(jname).id
+                        print(f"  Joint '{jname}' -> id: {jid}")
+                    except Exception as e:
+                        print(f"  Joint '{jname}' -> error: {e}")
+
+            VELOCITY_LIMITS = {k: 3*np.pi for k in joint_names}
             self.ik_limits.append(mink.VelocityLimit(self.model, VELOCITY_LIMITS)) 
             
         self.setup_retarget_configuration()

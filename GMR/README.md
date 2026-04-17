@@ -128,7 +128,7 @@ https://github.com/user-attachments/assets/a8ef1409-88f1-4393-9cd0-d2b14216d2a4
 | 6 | Booster K1 `booster_k1` | Neck (2) + Arm (2\*4) + Leg (2\*6) = 22 | ✅ | TBD | TBD |
 | 7 | Stanford ToddlerBot `stanford_toddy` | TBD | ✅ | ✅ | TBD |
 | 8 | Fourier N1 `fourier_n1` | TBD | ✅ | ✅ | TBD |
-| 9 | ENGINEAI PM01 `engineai_pm01` | TBD | ✅ | ✅ | TBD |
+| 9 | PM01 `pm01` | TBD | ✅ | ✅ | TBD |
 | 10 | HighTorque Hi `hightorque_hi` | Head (2) + Arm (2\*5) + Waist (1) + Leg (2\*6) = 25 | ✅ | TBD | TBD |
 | 11 | Galaxea R1 Pro `galaxea_r1pro` (this is a wheeled robot!) |  Base (6) + Torso (4) + Arm (2*7) = 24 | ✅ | TBD | TBD |
 | 12 | Kuavo `kuavo_s45` |  Head (2) + Arm (2\*7) + Leg (2\*6) = 28 | ✅ | TBD | TBD |

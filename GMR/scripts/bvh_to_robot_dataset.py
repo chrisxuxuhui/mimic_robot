@@ -31,7 +31,7 @@ if __name__ == "__main__":
     )
     
     parser.add_argument(
-        "--robot", type=str, choices=["unitree_g1", "booster_t1", "stanford_toddy","hightorque_hi","pi","pi_waist","pi_football"],
+        "--robot", type=str, choices=["unitree_g1", "booster_t1", "stanford_toddy","hightorque_hi","pm01","pi","pi_waist","pi_football"],
                         default="unitree_g1"
                         )
     

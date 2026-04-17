@@ -20,8 +20,8 @@ from isaaclab.app import AppLauncher
 
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Replay converted motions.")
-parser.add_argument("--robot", type=str, choices=["hi", "pi_plus"], required=True,
-                   help="Robot type: hi (Hi), pi_plus (PI Plus)")
+parser.add_argument("--robot", type=str, choices=["hi", "pi_plus", "pm01"], required=True,
+                   help="Robot type: hi (Hi), pi_plus (PI Plus), pm01 (PM01)")
 parser.add_argument("--registry_name", type=str, help="The name of the wand registry.")
 parser.add_argument("--motion_file", type=str, help="Local motion NPZ file path")
 
@@ -48,6 +48,7 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 ##
 from whole_body_tracking.robots.hi import HI_CFG
 from whole_body_tracking.robots.pi_plus import PI_PLUS_CFG
+from whole_body_tracking.robots.pm01 import PM01_CFG
 from whole_body_tracking.tasks.tracking.mdp import MotionLoader
 
 # Robot configurations
@@ -59,6 +60,10 @@ ROBOT_CONFIGS = {
     "pi_plus": {
         "cfg": PI_PLUS_CFG,
         "name": "PI Plus"
+    },
+    "pm01": {
+        "cfg": PM01_CFG,
+        "name": "PM01"
     }
 }
 

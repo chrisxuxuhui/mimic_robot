@@ -1,0 +1,11 @@
+{"time":"2026-04-16T18:51:08.545200396Z","level":"INFO","msg":"stream: starting","core version":"0.24.1"}
+{"time":"2026-04-16T18:51:09.147809181Z","level":"INFO","msg":"stream: created new stream","id":"hpynyslq"}
+{"time":"2026-04-16T18:51:09.158068077Z","level":"INFO","msg":"handler: started","stream_id":"hpynyslq"}
+{"time":"2026-04-16T18:51:09.158235482Z","level":"INFO","msg":"stream: started","id":"hpynyslq"}
+{"time":"2026-04-16T18:51:09.15825485Z","level":"INFO","msg":"writer: started","stream_id":"hpynyslq"}
+{"time":"2026-04-16T18:51:09.158305301Z","level":"INFO","msg":"sender: started","stream_id":"hpynyslq"}
+{"time":"2026-04-16T18:51:30.097799716Z","level":"INFO","msg":"stream: closing","id":"hpynyslq"}
+{"time":"2026-04-16T18:51:31.556188955Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2026-04-16T18:51:32.907803074Z","level":"INFO","msg":"handler: closed","stream_id":"hpynyslq"}
+{"time":"2026-04-16T18:51:32.908442865Z","level":"INFO","msg":"sender: closed","stream_id":"hpynyslq"}
+{"time":"2026-04-16T18:51:32.908535096Z","level":"INFO","msg":"stream: closed","id":"hpynyslq"}

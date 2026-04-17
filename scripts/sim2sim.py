@@ -109,6 +109,47 @@ ROBOT_CONFIGS = {
             "joint_vel": 22,
             "actions": 22
         }
+    },
+    "pm01": {
+        "num_actions": 24,
+        "num_obs": 129,
+        "reference_body": "link_base",
+        "default_xml": None,  # Must be provided
+        "joint_names": [
+            "j00_hip_pitch_l_joint",
+            "j01_hip_roll_l_joint",
+            "j02_hip_yaw_l_joint",
+            "j03_knee_pitch_l_joint",
+            "j04_ankle_pitch_l_joint",
+            "j05_ankle_roll_l_joint",
+            "j06_hip_pitch_r_joint",
+            "j07_hip_roll_r_joint",
+            "j08_hip_yaw_r_joint",
+            "j09_knee_pitch_r_joint",
+            "j10_ankle_pitch_r_joint",
+            "j11_ankle_roll_r_joint",
+            "j12_waist_yaw_joint",
+            "j13_shoulder_pitch_l_joint",
+            "j14_shoulder_roll_l_joint",
+            "j15_shoulder_yaw_l_joint",
+            "j16_elbow_pitch_l_joint",
+            "j17_elbow_yaw_l_joint",
+            "j18_shoulder_pitch_r_joint",
+            "j19_shoulder_roll_r_joint",
+            "j20_shoulder_yaw_r_joint",
+            "j21_elbow_pitch_r_joint",
+            "j22_elbow_yaw_r_joint",
+            "j23_head_yaw_joint",
+        ],
+        "motion_body_index": 0,
+        "observation_structure": {
+            "command": 48,
+            "motion_ref_ori_b": 6,
+            "base_ang_vel": 3,
+            "joint_pos": 24,
+            "joint_vel": 24,
+            "actions": 24
+        }
     }
 }
 
@@ -391,8 +432,8 @@ def run_simulation(robot_type: str, motion_file: str, xml_path: str, policy_path
                 
                 # Create observations based on robot type
                 offset = 0
-                if robot_type in ["hi", "pi_plus"]:
-                    # HI and PI Plus observation creation
+                if robot_type in ["hi", "pi_plus", "pm01"]:
+                    # HI, PI Plus and PM01 observation creation
                     robot_quat_w = torch.from_numpy(quat).unsqueeze(0)
                     q01 = quat
                     q02 = motionquatcurrent
@@ -403,12 +444,12 @@ def run_simulation(robot_type: str, motion_file: str, xml_path: str, policy_path
                         q12 = q10
                     mat = matrix_from_quat(torch.from_numpy(q12))
                     motion_ref_ori_b = mat[..., :2].reshape(6)
-                    
+
                     qpos_xml = d.qpos[7:7 + num_actions]
                     qpos_seq = np.array([qpos_xml[joint_xml.index(joint)] for joint in joint_seq])
                     qvel_xml = d.qvel[6:6 + num_actions]
                     qvel_seq = np.array([qvel_xml[joint_xml.index(joint)] for joint in joint_seq])
-                    
+
                     obs = create_observation_hi_pi(obs, offset, motioninput, motion_ref_ori_b, omega, qpos_seq, qvel_seq, action_buffer, joint_pos_array_seq, num_actions)
                 
                 # Run policy inference
@@ -437,8 +478,8 @@ def run_simulation(robot_type: str, motion_file: str, xml_path: str, policy_path
 
 def main():
     parser = argparse.ArgumentParser(description="Unified sim2sim script for multiple robots.")
-    parser.add_argument("--robot", type=str, choices=["hi", "pi_plus"], required=True,
-                        help="Robot type:  hi (Hi), pi_plus (PI Plus)")
+    parser.add_argument("--robot", type=str, choices=["hi", "pi_plus", "pm01"], required=True,
+                        help="Robot type:  hi (Hi), pi_plus (PI Plus), pm01 (PM01)")
     parser.add_argument("--motion_file", type=str, required=True, 
                         help="Path to the motion NPZ file")
     parser.add_argument("--xml_path", type=str, required=True,
