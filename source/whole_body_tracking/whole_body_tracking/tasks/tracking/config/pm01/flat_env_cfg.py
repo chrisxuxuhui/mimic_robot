@@ -66,10 +66,10 @@ class PM01FlatEnvCfg(TrackingEnvCfg):
 
             "link_shoulder_roll_l",  # 左肩滚转
             "link_elbow_pitch_l",    # 左肘（俯仰）
-            "link_elbow_yaw_l",      # 左肘末端（偏航，作为手腕）
+            "link_elbow_yaw_l",      # 左肘偏航（手腕位置）
             "link_shoulder_roll_r",  # 右肩滚转
             "link_elbow_pitch_r",    # 右肘（俯仰）
-            "link_elbow_yaw_r",      # 右肘末端（偏航，作为手腕）
+            "link_elbow_yaw_r",      # 右肘偏航（手腕位置）
         ]
 
         # 相机设置：自由视角，不跟随机器人
@@ -79,7 +79,7 @@ class PM01FlatEnvCfg(TrackingEnvCfg):
         self.viewer.asset_name = None  # 不绑定到特定资产
 
         # 关闭调试可视化显示
-        # self.commands.motion.debug_vis = False  # 关闭motion命令的调试可视化
+        self.commands.motion.debug_vis = False  # 关闭motion命令的调试可视化
         self.scene.contact_forces.debug_vis = False  # 关闭接触力可视化
 
         # 保持训练时的默认设置（自适应采样等）
@@ -90,8 +90,8 @@ class PM01FlatEnvCfg(TrackingEnvCfg):
         self.terminations.ee_body_pos.params["body_names"] = [
             "link_ankle_roll_l",  # 左脚踝
             "link_ankle_roll_r",
-            "link_elbow_yaw_l",   # 左肘末端（偏航，作为手腕）
-            "link_elbow_yaw_r",   # 右肘末端
+            "link_elbow_yaw_l",   # 左肘偏航（手腕位置）
+            "link_elbow_yaw_r",   # 右肘偏航（手腕位置）
         ]
 
         # 不希望接触的身体部位（除了脚踝和手腕/肘末端）
@@ -111,6 +111,9 @@ class PM01FlatEnvCfg(TrackingEnvCfg):
                 "com_range": {"x": (-0.025, 0.025), "y": (-0.05, 0.05), "z": (-0.05, 0.05)},
             },
         )
+
+        # 放宽末端执行器位置误差阈值（PM01需要更大容忍度）
+        self.terminations.ee_body_pos.params["threshold"] = 0.5  # 从0.25增加到0.5米
 
 
 @configclass

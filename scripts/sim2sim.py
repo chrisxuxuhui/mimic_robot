@@ -62,6 +62,8 @@ ROBOT_CONFIGS = {
             "r_wrist_joint",
         ],
         "motion_body_index": 0,
+        "orientation_sensor": "orientation",
+        "angular_velocity_sensor": "angular-velocity",
         "observation_structure": {
             "command": 46,
             "motion_ref_ori_b": 6,
@@ -101,6 +103,8 @@ ROBOT_CONFIGS = {
             "r_wrist_joint",
         ],
         "motion_body_index": 0,
+        "orientation_sensor": "orientation",
+        "angular_velocity_sensor": "angular-velocity",
         "observation_structure": {
             "command": 44,
             "motion_ref_ori_b": 6,
@@ -113,7 +117,7 @@ ROBOT_CONFIGS = {
     "pm01": {
         "num_actions": 24,
         "num_obs": 129,
-        "reference_body": "link_base",
+        "reference_body": "LINK_BASE",
         "default_xml": None,  # Must be provided
         "joint_names": [
             "j00_hip_pitch_l_joint",
@@ -142,6 +146,8 @@ ROBOT_CONFIGS = {
             "j23_head_yaw_joint",
         ],
         "motion_body_index": 0,
+        "orientation_sensor": "base_link_quaternion",
+        "angular_velocity_sensor": "base_link_angular_velocity",
         "observation_structure": {
             "command": 48,
             "motion_ref_ori_b": 6,
@@ -176,15 +182,15 @@ def matrix_from_quat(quaternions: torch.Tensor) -> torch.Tensor:
     return o.reshape(quaternions.shape[:-1] + (3, 3))
 
 
-def get_obs(data):
+def get_obs(data, orientation_sensor="orientation", angular_velocity_sensor="angular-velocity"):
     """Extracts an observation from the mujoco data structure"""
     qpos = data.qpos.astype(np.double)
     dq = data.qvel.astype(np.double)
-    quat = data.sensor("orientation").data[[0, 1, 2, 3]].astype(np.double)
-    
+    quat = data.sensor(orientation_sensor).data[[0, 1, 2, 3]].astype(np.double)
+
     r = R.from_quat(quat)
     v = r.apply(data.qvel[:3], inverse=True).astype(np.double)
-    omega = data.sensor("angular-velocity").data.astype(np.double)
+    omega = data.sensor(angular_velocity_sensor).data.astype(np.double)
     gvec = r.apply(np.array([0.0, 0.0, -1.0]), inverse=True).astype(np.double)
     state_tau = data.qfrc_actuator.astype(np.double) - data.qfrc_bias.astype(np.double)
 
@@ -418,7 +424,7 @@ def run_simulation(robot_type: str, motion_file: str, xml_path: str, policy_path
             step_start = time.time()
 
             mujoco.mj_step(m, d)
-            qpos, dq, quat, v, omega, gvec, state_tau = get_obs(d)
+            qpos, dq, quat, v, omega, gvec, state_tau = get_obs(d, config["orientation_sensor"], config["angular_velocity_sensor"])
             tau = pd_control(target_dof_pos, d.qpos[7:], stiffness_array, np.zeros_like(damping_array), d.qvel[6:], damping_array)
 
             d.ctrl[:] = tau

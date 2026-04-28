@@ -124,6 +124,11 @@ def run_simulator(sim: sim_utils.SimulationContext, scene: InteractiveScene):
         reset_ids = time_steps >= motion.time_step_total
         time_steps[reset_ids] = 0
 
+        # Print current frame every 30 frames (~1s at 30fps)
+        if time_steps[0].item() % 30 == 0:
+            print(f"Frame: {time_steps[0].item()}/{motion.time_step_total}  "
+                  f"Time: {time_steps[0].item()/30:.1f}s", flush=True)
+
         root_states = robot.data.default_root_state.clone()
         root_states[:, :3] = motion.body_pos_w[time_steps][:, 0] + scene.env_origins[:, None, :]
         root_states[:, 3:7] = motion.body_quat_w[time_steps][:, 0]
